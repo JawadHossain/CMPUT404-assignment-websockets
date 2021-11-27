@@ -44,7 +44,6 @@ debug("Test");
 
 world = {};
 
-//XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
         beginPath();                
@@ -54,7 +53,14 @@ function drawCircle(context,entity) {
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+
+        arc(x, y, 50, 0, Math.PI * 2, true); // Outer circle
+        moveTo(x+35, y);
+        arc(x, y, 35, 0, Math.PI, false);  // Mouth (clockwise)
+        moveTo(x-10, y-10);
+        arc(x-15, y-15, 5, 0, Math.PI * 2, true);  // Left eye
+        moveTo(x+20, y-10);
+        arc(x+15, y-10, 5, 0, Math.PI * 2, true);  // Right eye
         stroke();                                
     }
 }
@@ -125,6 +131,7 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just modified!
+    socket.send( JSON.stringify( {entity: data } ) )
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -229,17 +236,17 @@ mouse = (function() {
 })();
 
 // Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
+// Make these prettier! - Modified colours
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'DarkBlue'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'Crimson'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    addEntityWithoutName({'x':x,'y':y,'colour':'RebeccaPurple',
                           'radius':10});
 });
 
@@ -253,7 +260,7 @@ function wsSetup() {
     var url = "ws://"+host+"/subscribe";   
     socket = new WebSocket(url);
     socket.onopen = function() {
-        //XXX: TODO What are you going to do here?
+        console.log("Websocket opened")
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
@@ -261,6 +268,10 @@ function wsSetup() {
     socket.onmessage = function(msg) {  
         try {
             debug("WebSocket Recv:" + msg.data);
+            let json = JSON.parse(msg.data)
+            let entity = Object.keys(json)[0];
+            world[entity] = json[entity]
+            drawNextFrame()
             //XXX: TODO What are you going to do here?            
         } catch (e) {
             alert("socket on message: " + e);
