@@ -27,8 +27,10 @@ sockets = Sockets(app)
 app.debug = True
 
 # ref: https://github.com/uofa-cmput404/cmput404-slides/blob/master/examples/WebSocketsExamples/chat.py
+clients = list()
+
 def send_all(msg):
-    for client in myWorld.listeners:
+    for client in clients:
         client.put( msg )
 
 def send_all_json(obj):
@@ -115,7 +117,7 @@ def subscribe_socket(ws):
        websocket and read updates from the websocket '''
     # XXX: TODO IMPLEMENT ME
     client = Client()
-    myWorld.add_set_listener(client)
+    clients.append(client)
     g = gevent.spawn(read_ws, ws, client)    
     try:
         while True:
@@ -125,7 +127,7 @@ def subscribe_socket(ws):
     except Exception as e:# WebSocketError as e:
         print("WS Error %s" % e)
     finally:
-        myWorld.listeners.remove(client)
+        clients.remove(client)
         gevent.kill(g)
 
 
