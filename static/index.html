@@ -260,7 +260,7 @@ function wsSetup() {
     var url = "ws://"+host+"/subscribe";   
     socket = new WebSocket(url);
     socket.onopen = function() {
-        console.log("Websocket opened")
+        debug("Websocket opened")
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
