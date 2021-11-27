@@ -55,7 +55,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Contributors
 ============
-
+* Jawad Hossain
 * Mark Galloway
 * Abram Hindle
 * Cole Mackenzie
